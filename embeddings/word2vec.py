@@ -3,12 +3,20 @@ import collections
 import gensim
 import pickle
 from settings import ROOT_DIR
-''' the input for gensim word2vec is a list of words, cannot be sentences as the document_test is'''
+''' the input for gensim word2vec is a sequence of sentences as its input.
+    Each sentence a list of words (utf8 strings):'''
 
 dir = ROOT_DIR+'\\processed_data\\';
 
-data = pickle.load(open(dir+'document_text.p', 'rb'));
+data = pickle.load(open(dir+'sentence_text.p', 'rb'));
+document = data[1];
 
-model = gensim.models.Word2Vec(data, min_count=1)
+#compiled sentences
+compiled_sentences = data[0];
+for i in range(len(data)):
+    compiled_sentences += data[i];
 
-print(model.similarity('stock', 'market'))
+print(compiled_sentences)
+model = gensim.models.Word2Vec(compiled_sentences, min_count=1)
+
+print(model.similarity('Greece', 'bailout'))

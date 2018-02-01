@@ -13,7 +13,7 @@ out_dir = ROOT_DIR+'\\processed_data\\';
 print(dir)
 counter = 0;
 document_data = list(); #stores all texts as single string
-word_data = list(); #stores text as individual words found in the article
+word_sentence_data = list(); #stores text as individual words found in the article
 
 for file in os.listdir(data_dir):
     print(file)
@@ -22,6 +22,15 @@ for file in os.listdir(data_dir):
 
     text = data['bodyXML']
     document_data.append(text);
+
+    #need a more advanced function to parse this
+    sentences = text.split('.');
+    # split each sentence in sentences into a list of words
+    sentence_list = list();
+    for sentence in sentences:
+        words = sentence.split(' ');
+        sentence_list.append(words);
+    word_sentence_data.append(sentence_list);
     # create the transform
 
 
@@ -32,7 +41,8 @@ for file in os.listdir(data_dir):
 ## save text_data
 file = open(out_dir+'document_text.p', 'wb')
 pickle.dump(document_data, file);
-
+file2 = open(out_dir+'sentence_text.p', 'wb');
+pickle.dump(word_sentence_data, file2);
 
 vectorizer = TfidfVectorizer()
 # tokenize and build vocab
