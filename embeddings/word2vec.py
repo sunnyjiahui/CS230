@@ -3,6 +3,8 @@ import collections
 import gensim
 import pickle
 from settings import ROOT_DIR
+import re
+
 ''' the input for gensim word2vec is a sequence of sentences as its input.
     Each sentence a list of words (utf8 strings):'''
 
@@ -20,3 +22,7 @@ print(compiled_sentences)
 model = gensim.models.Word2Vec(compiled_sentences, min_count=1)
 
 print(model.similarity('Greece', 'bailout'))
+print(model.most_similar(positive=['woman', 'bailout'], negative=['man'], topn=1))
+
+## visualize embedding using t-sne
+

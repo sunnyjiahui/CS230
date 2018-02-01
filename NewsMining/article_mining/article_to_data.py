@@ -6,6 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.pyplot as plt
 import pickle
 from settings import ROOT_DIR
+import re
 
 dir = os.getcwd()
 data_dir = ROOT_DIR+'\\financial_times\\FT-archive-2013\\';
@@ -16,7 +17,7 @@ document_data = list(); #stores all texts as single string
 word_sentence_data = list(); #stores text as individual words found in the article
 
 for file in os.listdir(data_dir):
-    print(file)
+
     data = json.load(open(data_dir+file,  encoding="utf8"));
     #pprint(data)
 
@@ -24,7 +25,20 @@ for file in os.listdir(data_dir):
     document_data.append(text);
 
     #need a more advanced function to parse this
+
+    #remove certain unnecessary sequences
+    text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
+    text = text.replace('<body>', '');
+    text =text.replace('<p>', '');
+    text =text.replace('</p>', '');
+    text =text.replace('</a>', '');
+    text =text.replace('</em>', '');
+
+    text =text.replace('</strong>', '')
+    text =text.replace('<strong>', '')
+    text = text.strip('\n')
     sentences = text.split('.');
+    print(sentences)
     # split each sentence in sentences into a list of words
     sentence_list = list();
     for sentence in sentences:
@@ -32,7 +46,6 @@ for file in os.listdir(data_dir):
         sentence_list.append(words);
     word_sentence_data.append(sentence_list);
     # create the transform
-
 
     counter+=1;
     if(counter> 100):
