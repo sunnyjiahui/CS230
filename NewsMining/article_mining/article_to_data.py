@@ -7,7 +7,10 @@ import matplotlib.pyplot as plt
 import pickle
 from settings import ROOT_DIR
 import re
+TAG_RE = re.compile(r'<[^>]+>')
 
+def remove_tags(text):
+    return TAG_RE.sub('', text)
 dir = os.getcwd()
 data_dir = ROOT_DIR+'\\financial_times\\FT-archive-2013\\';
 out_dir = ROOT_DIR+'\\processed_data\\';
@@ -26,27 +29,23 @@ for file in os.listdir(data_dir):
 
     #need a more advanced function to parse this
 
-    #remove certain unnecessary sequences
-    text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
-    text = text.replace('<body>', '');
-    text =text.replace('<p>', '');
-    text =text.replace('</p>', '');
-    text =text.replace('</a>', '');
-    text =text.replace('</em>', '');
-
-    text =text.replace('</strong>', '')
-    text =text.replace('<strong>', '')
+    text = remove_tags(text);
     text = text.strip('\n')
-    sentences = text.split('.');
+
+
+    ## convert to sentences with tokenize
+    sentences = nltk.sent_tokenize(text)
+    #sentences = text.split('.');
     print(sentences)
     # split each sentence in sentences into a list of words
     sentence_list = list();
     for sentence in sentences:
-        words = sentence.split(' ');
+        words = nltk.word_tokenize(sentence);
+        words = [w.lower() for w in words]
         sentence_list.append(words);
     word_sentence_data.append(sentence_list);
     # create the transform
-
+    print(word_sentence_data)
     counter+=1;
     if(counter> 100):
         break;
@@ -56,16 +55,3 @@ file = open(out_dir+'document_text.p', 'wb')
 pickle.dump(document_data, file);
 file2 = open(out_dir+'sentence_text.p', 'wb');
 pickle.dump(word_sentence_data, file2);
-
-vectorizer = TfidfVectorizer()
-# tokenize and build vocab
-vectorizer.fit(document_data)
-# summarize
-print(vectorizer.vocabulary_)
-print(vectorizer.idf_)
-# encode document
-vector = vectorizer.transform([text[1]])
-# summarize encoded vector
-print(vector.shape)
-print(vector.toarray())
-
